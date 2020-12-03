@@ -27,7 +27,7 @@ export function generateJson(key: string, value: string) {
     if (!fs.existsSync(filename)) {
       const obj = _.set({}, key, value)
       fs.outputFile(filename, JSON.stringify(obj, null, 2) + os.EOL, () => {
-        resolve()
+        resolve('success')
       })
     } else {
       const originContent = fs.readJSONSync(filename)
@@ -36,10 +36,10 @@ export function generateJson(key: string, value: string) {
       // 判断key是否重复
       if (_.get(obj, key) !== undefined) {
         vscode.window.showErrorMessage(`key: \`${key}\`重复，请重新命名`)
-        reject('key重复')
+        return
       }
       _.set(obj, key, value)
-      fs.writeFile(filename, JSON.stringify(obj, null, 2) + os.EOL, () => resolve())
+      fs.writeFile(filename, JSON.stringify(obj, null, 2) + os.EOL, () => resolve('success'))
     }
   })
 }

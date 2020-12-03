@@ -1,4 +1,5 @@
 import * as vscode from 'vscode';
+import { tsquery } from '@phenomnomnominal/tsquery'
 import { getConfiguration } from './utils';
 import { Pos } from './typing';
 
@@ -24,9 +25,28 @@ const { window } = vscode
  *   name: 张三    ----> name: i18n('name')
  * }
  */
-export async function replaceSelectedContent(key: string, taggedTemplateNodesPos: Pos[]) {
+export async function replaceSelectedContent(key: string) {
+  const taggedTemplateNodesPos: Pos[] = []
+
   const activeEditor = window.activeTextEditor
   if (!activeEditor) return;
+
+  const code = activeEditor.document.getText()
+  const ast = tsquery.ast(code)
+  const nodes = tsquery(ast, 'TaggedTemplateExpression')
+
+  nodes.forEach(node => {
+    const start = node.getStart()
+    const end = node.getEnd()
+
+    const startPos = activeEditor.document.positionAt(start + 1)
+    const endPos = activeEditor.document.positionAt(end)
+
+    taggedTemplateNodesPos.push({
+      startLine: startPos.line,
+      endLine: endPos.line
+    })
+  })
 
   const selection = activeEditor.selection;
   const { start, end } = selection;
