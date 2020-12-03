@@ -5,11 +5,11 @@
 
 import * as vscode from 'vscode';
 import * as _ from 'lodash';
+import * as fs from 'fs-extra';
 import { tsquery } from '@phenomnomnominal/tsquery'
 import { replaceSelectedContent } from './replaceSelectedContent';
-import { generateJson, analysisJson } from './utils'
+import { generateJson, analysisJson, getConfiguration } from './utils'
 import { Pos } from './typing';
-import { pick } from 'lodash';
 
 const { window } = vscode;
 
@@ -66,6 +66,46 @@ export function activate(context: vscode.ExtensionContext) {
 
     window.showInformationMessage(`成功替换当前文本`);
   }));
+
+  /**
+   * 跳转
+   */
+  context.subscriptions.push(vscode.languages.registerDefinitionProvider(['javascript', 'typescript'], {
+    provideDefinition: (document, position) => {
+      const word = document.getText(document.getWordRangeAtPosition(position))
+
+      const filename = `${vscode.workspace.rootPath}/${getConfiguration('filePath')}`
+      if (fs.existsSync(filename)) {
+        const obj = fs.readJSONSync(filename)
+        if (_.get(obj, word)) {
+          const keys = _.keys(obj)
+          const index = _.findIndex(keys, key => key === word)
+          return new vscode.Location(vscode.Uri.file(filename), new vscode.Position(index + 1, 0))
+        }
+      }
+    }
+  }))
+
+  /**
+   * 悬停提示
+   */
+  context.subscriptions.push(vscode.languages.registerHoverProvider(['javascript', 'typescript'],
+    new (class implements vscode.HoverProvider {
+      provideHover(document: vscode.TextDocument, position: vscode.Position) {
+        const word = document.getText(document.getWordRangeAtPosition(position))
+
+        const filename = `${vscode.workspace.rootPath}/${getConfiguration('filePath')}`
+        if (fs.existsSync(filename)) {
+          const obj = fs.readJSONSync(filename)
+          const value = _.get(obj, word)
+          if (value) {
+            const contents = new vscode.MarkdownString(`**[ ${word} ]**: ${value}`);
+            return new vscode.Hover(contents);
+          }
+        }
+      }
+    })()
+  ))
 
   function init() {
     const activeEditor = window.activeTextEditor
