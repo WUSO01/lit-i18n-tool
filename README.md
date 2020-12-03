@@ -36,4 +36,4 @@
 
 如何使用： 选择你需要翻译的文本，右键找到`lit-i18n-tool: 替换选择的文本`（也可以使用快捷键），选择后会有一个input框提示输入key，输入后回车即可。
 
-
+![demo](https://github.com/WUSO01/lit-i18n-tool/blob/main/assets/demo.gif)

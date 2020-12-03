@@ -6,19 +6,13 @@
 import * as vscode from 'vscode';
 import * as _ from 'lodash';
 import * as fs from 'fs-extra';
-import { tsquery } from '@phenomnomnominal/tsquery'
 import { replaceSelectedContent } from './replaceSelectedContent';
 import { generateJson, analysisJson, getConfiguration } from './utils'
-import { Pos } from './typing';
 
 const { window } = vscode;
 
 export function activate(context: vscode.ExtensionContext) {
-  const taggedTemplateNodesPos: Pos[] = []
-
   console.log('欢迎使用 Lit-i18n-tool....');
-
-  init()
 
   /**
    * 根据当前选择的内容生成key
@@ -47,7 +41,7 @@ export function activate(context: vscode.ExtensionContext) {
         placeHolder: '当前文本已有翻译模版'
       })
 
-      if (picked) return replaceSelectedContent(picked.description, taggedTemplateNodesPos)
+      if (picked) return replaceSelectedContent(picked.description)
     }
 
     // 获取输入的key
@@ -62,7 +56,7 @@ export function activate(context: vscode.ExtensionContext) {
     }
 
     await generateJson(key, selectedText)
-    await replaceSelectedContent(key, taggedTemplateNodesPos);
+    await replaceSelectedContent(key);
 
     window.showInformationMessage(`成功替换当前文本`);
   }));
@@ -106,28 +100,6 @@ export function activate(context: vscode.ExtensionContext) {
       }
     })()
   ))
-
-  function init() {
-    const activeEditor = window.activeTextEditor
-    if (!activeEditor) return;
-
-    const code = activeEditor.document.getText()
-    const ast = tsquery.ast(code)
-    const nodes = tsquery(ast, 'TaggedTemplateExpression')
-
-    nodes.forEach(node => {
-      const start = node.getStart()
-      const end = node.getEnd()
-
-      const startPos = activeEditor.document.positionAt(start + 1)
-      const endPos = activeEditor.document.positionAt(end)
-
-      taggedTemplateNodesPos.push({
-        startLine: startPos.line,
-        endLine: endPos.line
-      })
-    })
-  }
 }
 
 export function deactivate() { }
