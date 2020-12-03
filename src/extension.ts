@@ -7,8 +7,9 @@ import * as vscode from 'vscode';
 import * as _ from 'lodash';
 import { tsquery } from '@phenomnomnominal/tsquery'
 import { replaceSelectedContent } from './replaceSelectedContent';
-import { generateJson } from './utils'
+import { generateJson, analysisJson } from './utils'
 import { Pos } from './typing';
+import { pick } from 'lodash';
 
 const { window } = vscode;
 
@@ -21,7 +22,7 @@ export function activate(context: vscode.ExtensionContext) {
 
   /**
    * 根据当前选择的内容生成key
-   * TODO 检查是否有当前内容的翻译，或者相似内容的翻译
+   * 检查是否有当前内容的翻译，或者相似内容的翻译
    * 如果有显示已经翻译的列表
    * 反之直接显示key的输入框
    */
@@ -31,6 +32,23 @@ export function activate(context: vscode.ExtensionContext) {
 
     const selection = activeEditor.selection;
     const selectedText = activeEditor.document.getText(selection);
+
+    const list = analysisJson(selectedText)
+
+    if (list?.length) {
+      const pickList = list.map(item => {
+        return {
+          label: item.value,
+          description: item.key
+        }
+      });
+
+      const picked = await window.showQuickPick(pickList, {
+        placeHolder: '当前文本已有翻译模版'
+      })
+
+      if (picked) return replaceSelectedContent(picked.description, taggedTemplateNodesPos)
+    }
 
     // 获取输入的key
     const key: string | undefined = await window.showInputBox({
@@ -43,7 +61,6 @@ export function activate(context: vscode.ExtensionContext) {
       return window.showErrorMessage('key不能为空');
     }
 
-    // TODO generate transate json, Key值是唯一的，不能重复
     await generateJson(key, selectedText)
     await replaceSelectedContent(key, taggedTemplateNodesPos);
 

@@ -43,3 +43,24 @@ export function generateJson(key: string, value: string) {
     }
   })
 }
+
+/**
+ * 检查JSON文件
+ */
+export function analysisJson(val: string) {
+  const filePath = getConfiguration('filePath')
+  const filename = `${vscode.workspace.rootPath}/${filePath}`
+
+  if (fs.existsSync(filename)) {
+    const obj = fs.readJSONSync(filename)
+    const list = _.keys(obj)
+      .map(key => {
+        return {
+          key,
+          value: _.get(obj, key)
+        }
+      })
+      .filter(item => item.value.includes(val))
+    return list
+  }
+}
