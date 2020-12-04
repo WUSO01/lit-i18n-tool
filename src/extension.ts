@@ -8,6 +8,7 @@ import * as _ from 'lodash';
 import * as fs from 'fs-extra';
 import { replaceSelectedContent } from './replaceSelectedContent';
 import { generateJson, analysisJson, getConfiguration } from './utils'
+import { searchKey } from './search'
 
 const { window } = vscode;
 
@@ -60,6 +61,31 @@ export function activate(context: vscode.ExtensionContext) {
 
     window.showInformationMessage(`成功替换当前文本`);
   }));
+
+  /**
+   * 更新选择的key
+   * 检索工作区，看当前key被使用了几次，并列举出来
+   * 如果全部替换，直接更新所有key，并修改json文件
+   * 否则，只更新选择的key，并在json中新增key
+   */
+  context.subscriptions.push(vscode.commands.registerTextEditorCommand('lit-i18n-tool.updateKey', async () => {
+    const activeEditor = window.activeTextEditor;
+    if (!activeEditor) return;
+
+    const selection = activeEditor.selection;
+    const selectedText = activeEditor.document.getText(selection);
+    // console.log('selectedText is:', selectedText)
+    const filename = `${vscode.workspace.rootPath}/${getConfiguration('filePath')}`
+
+    if (fs.existsSync(filename)) {
+      const obj = fs.readJSONSync(filename)
+      console.log(selectedText + ':' + obj[selectedText])
+    }
+
+    const searchList = await searchKey(selectedText)
+    console.log('searchList is:', searchList)
+
+  }))
 
   /**
    * 跳转

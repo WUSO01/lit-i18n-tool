@@ -14,6 +14,10 @@
     "type": "git",
     "url": "https://github.com/WUSO01/lit-i18n-tool"
   },
+  "author": {
+    "name": "WUSO01",
+    "url": "https://github.com/WUSO01"
+  },
   "activationEvents": [
     "onLanguage:typescript",
     "onLanguage:javascript",
@@ -42,6 +46,10 @@
       {
         "command": "lit-i18n-tool.replaceSingle",
         "title": "lit-i18n-tool: 替换选择的文本"
+      },
+      {
+        "command": "lit-i18n-tool.updateKey",
+        "title": "lit-i18n-tool: 更新key"
       }
     ],
     "keybindings": [
@@ -56,7 +64,13 @@
       "editor/context": [
         {
           "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html/",
-          "command": "lit-i18n-tool.replaceSingle"
+          "command": "lit-i18n-tool.replaceSingle",
+          "group": "1_i18n"
+        },
+        {
+          "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html/",
+          "command": "lit-i18n-tool.updateKey",
+          "group": "1_i18n"
         }
       ]
     }
