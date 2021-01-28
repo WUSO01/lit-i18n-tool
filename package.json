@@ -49,7 +49,11 @@
       },
       {
         "command": "lit-i18n-tool.updateKey",
-        "title": "lit-i18n-tool: 更新key"
+        "title": "lit-i18n-tool: 更新当前key"
+      },
+      {
+        "command": "lit-i18n-tool.check",
+        "title": "lit-i18n-tool: 检查key"
       }
     ],
     "keybindings": [

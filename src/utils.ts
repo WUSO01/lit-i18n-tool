@@ -1,20 +1,20 @@
 /**
  * 实用方法
  */
-import * as vscode from 'vscode';
-import * as fs from 'fs-extra';
-import * as os from 'os';
-import * as _ from 'lodash';
+import * as vscode from 'vscode'
+import * as fs from 'fs-extra'
+import * as os from 'os'
+import * as _ from 'lodash'
 
-const { workspace } = vscode;
+const { workspace, window } = vscode
 
 /**
  * 获取插件配置
  */
 export const getConfiguration = (key: string) => {
-  let value = workspace.getConfiguration('lit-i18n-tool').get(key);
-  return value;
-};
+  let value = workspace.getConfiguration('lit-i18n-tool').get(key)
+  return value
+}
 
 /**
  * 翻译JSON文件
@@ -63,4 +63,24 @@ export function analysisJson(val: string) {
       .filter(item => item.value.includes(val))
     return list
   }
+}
+
+/**
+ * 
+ */
+export function showOutput(data: any) {
+  if (!window.outputChannel) {
+    return
+  }
+
+  window.outputChannel.clear()
+
+  window.outputChannel.append(`共查找到${data.length}个结果` + '\n')
+  window.outputChannel.appendLine('')
+
+  data.forEach((v:any, i: number) => {
+    window.outputChannel.appendLine(`#${i + 1}: ${v}`)
+  })
+
+  window.outputChannel.show()
 }

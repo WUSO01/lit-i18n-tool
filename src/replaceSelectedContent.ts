@@ -1,7 +1,7 @@
-import * as vscode from 'vscode';
+import * as vscode from 'vscode'
 import { tsquery } from '@phenomnomnominal/tsquery'
-import { getConfiguration } from './utils';
-import { Pos } from './typing';
+import { getConfiguration } from './utils'
+import { Pos } from './typing'
 
 const { window } = vscode
 
@@ -11,7 +11,7 @@ const { window } = vscode
  * @params taggedTemplateNodesPos
  * 
  * 目前考虑的两种情况：
- * [lit-element]：
+ * [模版字符串]：
  * 
  * render() {
  *   return html`
@@ -19,7 +19,7 @@ const { window } = vscode
  *   `
  * }
  * 
- * [正常情况]:
+ * [普通函数|对象]:
  * 
  * const obj = {
  *   name: 张三    ----> name: i18n('name')
@@ -29,7 +29,7 @@ export async function replaceSelectedContent(key: string) {
   const taggedTemplateNodesPos: Pos[] = []
 
   const activeEditor = window.activeTextEditor
-  if (!activeEditor) return;
+  if (!activeEditor) return
 
   const code = activeEditor.document.getText()
   const ast = tsquery.ast(code)
@@ -48,24 +48,25 @@ export async function replaceSelectedContent(key: string) {
     })
   })
 
-  const selection = activeEditor.selection;
-  const { start, end } = selection;
+  const selection = activeEditor.selection
+  const { start, end } = selection
 
-  const document = activeEditor.document;
-  const edit = new vscode.WorkspaceEdit();
+  const document = activeEditor.document
+  const edit = new vscode.WorkspaceEdit()
 
-  const fn = getConfiguration('func');
+  // 获取函数名字
+  const fn = getConfiguration('func')
 
   // 目前只考虑当前文件只有一个 html``
-  const { startLine, endLine } = taggedTemplateNodesPos.length ? taggedTemplateNodesPos[0] : { startLine: 0, endLine: 0 };
+  const { startLine, endLine } = taggedTemplateNodesPos.length ? taggedTemplateNodesPos[0] : { startLine: 0, endLine: 0 }
 
   if (start.line > startLine && end.line < endLine) {
-    edit.replace(document.uri, new vscode.Range(start, end), `\$\{${fn}('${key}')\}`);
+    edit.replace(document.uri, new vscode.Range(start, end), `\$\{${fn}('${key}')\}`)
   } else {
     // 需要把引号移除掉
-    edit.replace(document.uri, new vscode.Range(start.line, start.character - 1, end.line, end.character + 1), `${fn}('${key}')`);
+    edit.replace(document.uri, new vscode.Range(start.line, start.character - 1, end.line, end.character + 1), `${fn}('${key}')`)
   }
 
   // 更新编辑器
-  await vscode.workspace.applyEdit(edit);
+  await vscode.workspace.applyEdit(edit)
 }
