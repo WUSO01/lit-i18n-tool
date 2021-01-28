@@ -5,7 +5,10 @@ import * as vscode from 'vscode'
 import { getConfiguration } from './utils'
 
 export async function searchKey(key?: string) {
-  const files = await vscode.workspace.findFiles('**/*.{js,ts}', '/node_modules')
+  const include = getConfiguration('include').join(',')
+  const exclude = getConfiguration('exclude').join(',')
+
+  const files = await vscode.workspace.findFiles(`**/*.{${include}}`, `**/{${exclude}}`)
 
   const list: any[] = []
 

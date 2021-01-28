@@ -39,6 +39,41 @@
           "type": "string",
           "default": "public/locales/zh/translation.json",
           "description": "中文翻译JSON文件位置，如果JSON文件不存在，则会在当前目录生成此JSON文件"
+        },
+        "lit-i18n-tool.include": {
+          "type": "array",
+          "default": [
+            "js",
+            "ts"
+          ],
+          "description": "搜索时包含的文件",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "包含的文件"
+              }
+            ]
+          }
+        },
+        "lit-i18n-tool.exclude": {
+          "type": "array",
+          "default": [
+            "node_modules",
+            "dist",
+            "build",
+            ".vscode",
+            ".github"
+          ],
+          "description": "搜索时需要过滤的文件/文件夹",
+          "items": {
+            "anyOf": [
+              {
+                "type": "string",
+                "description": "不包括的文件/文件夹"
+              }
+            ]
+          }
         }
       }
     },

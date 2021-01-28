@@ -5,13 +5,14 @@ import * as vscode from 'vscode'
 import * as fs from 'fs-extra'
 import * as os from 'os'
 import * as _ from 'lodash'
+import { Config } from './typing'
 
 const { workspace, window } = vscode
 
 /**
  * 获取插件配置
  */
-export const getConfiguration = (key: string) => {
+export function getConfiguration<T extends keyof Config>(key: T): any {
   let value = workspace.getConfiguration('lit-i18n-tool').get(key)
   return value
 }
