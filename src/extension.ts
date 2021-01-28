@@ -76,7 +76,10 @@ export function activate(context: vscode.ExtensionContext) {
 
     const selection = activeEditor.selection
     const selectedText = activeEditor.document.getText(selection)
-    // console.log('selectedText is:', selectedText)
+    
+    if (!selectedText) {
+      // TODO: Show error message....
+    }
     const filename = `${workspace.rootPath}/${getConfiguration('filePath')}`
 
     if (fs.existsSync(filename)) {
@@ -96,28 +99,44 @@ export function activate(context: vscode.ExtensionContext) {
   context.subscriptions.push(vscode.commands.registerCommand('lit-i18n-tool.check', async () => {
     window.statusBarItem.text = '搜索中...'
     window.statusBarItem.show()
+
     const searchList = await searchKey()
     
     if (!searchList.length) return
 
+    console.log('searchList is:', searchList)
+
     // 获取json文件
     const filename = `${workspace.rootPath}/${getConfiguration('filePath')}`
     if (fs.existsSync(filename)) {
-      let exisss: string[] = []
+      let exisss: any[] = []
+    
       const obj = fs.readJSONSync(filename)
       const list = _.keys(obj)
       
       searchList.map(item => {
-        if (!list.includes(item)) {
-          exisss.push(item)
-        }
+        item.list.map((i:any) => {
+          if (!list.includes(i)) {
+            exisss.push({
+              uri: item.uri,
+              line: item.line,
+              key: i
+            })
+          }
+        })
       })
 
-      exisss = [...new Set(exisss)]
+      // exisss = [...new Set(exisss)]
+      console.log('exisss:', exisss)
 
-      window.statusBarItem.hide()
+      // window.statusBarItem.hide()
       
-      showOutput(exisss)
+      showOutput(exisss.length)
+      exisss.forEach((v: any, i: number) => {
+        window.outputChannel.appendLine(`${i}: ${v.uri}   #${v.line}`)
+        window.outputChannel.appendLine(`${v.key}`)
+        window.outputChannel.appendLine('')
+      })
     }
   }))
 

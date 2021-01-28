@@ -69,19 +69,19 @@ export function analysisJson(val: string) {
 /**
  * 
  */
-export function showOutput(data: any) {
+export function showOutput(length: number) {
   if (!window.outputChannel) {
     return
   }
 
   window.outputChannel.clear()
 
-  window.outputChannel.append(`共查找到${data.length}个结果` + '\n')
+  window.outputChannel.append(`共查找到${length}个结果` + '\n')
   window.outputChannel.appendLine('')
 
-  data.forEach((v:any, i: number) => {
-    window.outputChannel.appendLine(`#${i + 1}: ${v}`)
-  })
+  // data.forEach((v:any, i: number) => {
+  //   window.outputChannel.appendLine(`#${i + 1}: ${v}`)
+  // })
 
   window.outputChannel.show()
 }
