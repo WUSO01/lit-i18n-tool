@@ -4,6 +4,7 @@
  */
 
 import * as vscode from 'vscode'
+// import { QuickPickItem } from 'vscode'
 import * as _ from 'lodash'
 import * as fs from 'fs-extra'
 import { replaceSelectedContent } from './replaceSelectedContent'
@@ -74,22 +75,55 @@ export function activate(context: vscode.ExtensionContext) {
     const activeEditor = window.activeTextEditor
     if (!activeEditor) return
 
+    /**
+     * 对选中文本进行非空判断
+     */
     const selection = activeEditor.selection
     const selectedText = activeEditor.document.getText(selection)
-    
+
     if (!selectedText) {
-      // TODO: Show error message....
+      return window.showErrorMessage('请选择需要更新的key')
     }
+
+    // 获取json文件
     const filename = `${workspace.rootPath}/${getConfiguration('filePath')}`
 
-    if (fs.existsSync(filename)) {
-      const obj = fs.readJSONSync(filename)
-      console.log(selectedText + ':' + obj[selectedText])
+    if (!fs.existsSync(filename)) {
+      return window.showErrorMessage('JSON文件丢失')
     }
 
+    const data = fs.readJSONSync(filename)
+    
+    if (!data[selectedText]) {
+      return window.showErrorMessage('当前key在JSON文件中不存在')
+    }
+  
     // 搜素结果
     const searchList = await searchKey(selectedText)
     console.log('searchList is:', searchList)
+
+    // 拍平数组
+    const pickItems: vscode.QuickPickItem[] = []
+
+    for (let i = 0; i < searchList.length; i++) {
+      const { list, uri } = searchList[i]
+      for (let j = 0; j < list.length; j++) {
+        let obj: vscode.QuickPickItem = {
+          label: list[j].lineText,
+          description: `#${list[j].line}`,
+          detail: uri
+        }
+        pickItems.push(obj)
+      }
+    }
+    
+    const picked = await window.showQuickPick(pickItems, {
+      placeHolder: '请选择需要更新的key',
+      canPickMany: true
+    })
+
+    // TODO: 修改选择的key
+    console.log('picked is:', picked)
 
   }))
 
@@ -103,8 +137,6 @@ export function activate(context: vscode.ExtensionContext) {
     const searchList = await searchKey()
     
     if (!searchList.length) return
-
-    console.log('searchList is:', searchList)
 
     // 获取json文件
     const filename = `${workspace.rootPath}/${getConfiguration('filePath')}`
@@ -126,11 +158,6 @@ export function activate(context: vscode.ExtensionContext) {
         })
       })
 
-      // exisss = [...new Set(exisss)]
-      console.log('exisss:', exisss)
-
-      // window.statusBarItem.hide()
-      
       showOutput(exisss.length)
       exisss.forEach((v: any, i: number) => {
         window.outputChannel.appendLine(`${i}: ${v.uri}   #${v.line}`)
@@ -189,7 +216,6 @@ export function activate(context: vscode.ExtensionContext) {
 
       window.statusBarItem = statusBarItem
     }
-    console.log('init...')
 
     if (!window.outputChannel) {
       window.outputChannel = window.createOutputChannel('Lit-i18n-tools')
