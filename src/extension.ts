@@ -100,7 +100,6 @@ export function activate(context: vscode.ExtensionContext) {
   
     // 搜素结果
     const searchList = await searchKey(selectedText)
-    // console.log('searchList is:', searchList)
 
     const pickItems: vscode.QuickPickItem[] = []
 
@@ -136,6 +135,11 @@ export function activate(context: vscode.ExtensionContext) {
 
     if (!newKey || !newVal) {
       return window.showErrorMessage('格式不正确')
+    }
+
+    // 先检查newkey是否在json中存在
+    if (_.has(data, newKey)) {
+      return window.showErrorMessage(`key: \`${newKey}\`重复，请重新命名`)
     }
 
     const edit = new vscode.WorkspaceEdit()
