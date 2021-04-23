@@ -100,9 +100,8 @@ export function activate(context: vscode.ExtensionContext) {
   
     // 搜素结果
     const searchList = await searchKey(selectedText)
-    console.log('searchList is:', searchList)
+    // console.log('searchList is:', searchList)
 
-    // 拍平数组
     const pickItems: vscode.QuickPickItem[] = []
 
     for (let i = 0; i < searchList.length; i++) {
@@ -110,7 +109,7 @@ export function activate(context: vscode.ExtensionContext) {
       for (let j = 0; j < list.length; j++) {
         let obj: vscode.QuickPickItem = {
           label: list[j].lineText,
-          description: `#${list[j].line}`,
+          description: `${list[j].line}`,
           detail: uri
         }
         pickItems.push(obj)
@@ -124,6 +123,26 @@ export function activate(context: vscode.ExtensionContext) {
 
     // TODO: 修改选择的key
     console.log('picked is:', picked)
+
+    if (!picked) return
+
+    const keyValue = await window.showInputBox({
+      prompt: '设置key和value，如：key: value',
+      value: '',
+    })
+
+    if (!keyValue) {
+      return window.showErrorMessage('内容不能为空')
+    }
+
+    const [newKey, newVal] = keyValue.split(':')
+
+    if (!newKey || !newVal) {
+      return window.showErrorMessage('格式不正确')
+    }
+
+    console.log('newKey is:', newKey)
+    console.log('newVal is:', newVal)
 
   }))
 
