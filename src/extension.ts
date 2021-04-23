@@ -121,9 +121,6 @@ export function activate(context: vscode.ExtensionContext) {
       canPickMany: true
     })
 
-    // TODO: 修改选择的key
-    console.log('picked is:', picked)
-
     if (!picked) return
 
     const keyValue = await window.showInputBox({
@@ -141,9 +138,17 @@ export function activate(context: vscode.ExtensionContext) {
       return window.showErrorMessage('格式不正确')
     }
 
-    console.log('newKey is:', newKey)
-    console.log('newVal is:', newVal)
+    const edit = new vscode.WorkspaceEdit()
+    picked.map((pick: vscode.QuickPickItem) => {
+      const len = selectedText.length
+      const line = Number(pick.description) - 1
+      const startIndex = pick.label.indexOf(`'${selectedText}'`) + 1
 
+      edit.replace((pick.detail as any), new vscode.Range(line, startIndex, line, startIndex + len + 1), newKey + "'")
+    })
+
+    await vscode.workspace.applyEdit(edit)
+    generateJson(newKey, newVal)
   }))
 
   /**

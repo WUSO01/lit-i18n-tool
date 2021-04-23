@@ -40,7 +40,7 @@ function searchKeyInFile<T extends any[]>(file: vscode.TextDocument, list: T, ke
           uri: filePath,
           list: [
             {
-              lineText: lineText.trim(),
+              lineText: lineText,
               range,
               line: line + 1
             }
