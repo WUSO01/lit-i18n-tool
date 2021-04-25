@@ -4,7 +4,6 @@
  */
 
 import * as vscode from 'vscode'
-// import { QuickPickItem } from 'vscode'
 import * as _ from 'lodash'
 import * as fs from 'fs-extra'
 import { replaceSelectedContent } from './replaceSelectedContent'
@@ -160,7 +159,6 @@ export function activate(context: vscode.ExtensionContext) {
    */
   context.subscriptions.push(vscode.commands.registerCommand('lit-i18n-tool.check', async () => {
     window.statusBarItem.text = '搜索中...'
-    window.statusBarItem.show()
 
     const searchList = await searchKey()
     
@@ -192,6 +190,8 @@ export function activate(context: vscode.ExtensionContext) {
         window.outputChannel.appendLine(`${v.key}`)
         window.outputChannel.appendLine('')
       })
+    
+      window.statusBarItem.text = '检查key'
     }
   }))
 
@@ -238,9 +238,11 @@ export function activate(context: vscode.ExtensionContext) {
   function init() {
     if (!window.statusBarItem) {
       const statusBarItem = window.createStatusBarItem(vscode.StatusBarAlignment.Left)
-      statusBarItem.text = 'xxxxx'
-      statusBarItem.tooltip = 'hahahah'
+      statusBarItem.text = '检查key'
+      statusBarItem.tooltip = '检查'
       statusBarItem.command = 'lit-i18n-tool.check'
+
+      statusBarItem.show()
 
       window.statusBarItem = statusBarItem
     }
