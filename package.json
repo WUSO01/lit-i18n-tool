@@ -2,7 +2,7 @@
   "name": "lit-i18n-tool",
   "displayName": "lit-i18n-tool",
   "description": "让你的多语言项目项目开发更轻松",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "engines": {
     "vscode": "^1.47.0"
   },
