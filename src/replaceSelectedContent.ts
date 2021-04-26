@@ -57,10 +57,20 @@ export async function replaceSelectedContent(key: string) {
   // 获取函数名字
   const fn = getConfiguration('func')
 
-  // 目前只考虑当前文件只有一个 html``
-  const { startLine, endLine } = taggedTemplateNodesPos.length ? taggedTemplateNodesPos[0] : { startLine: 0, endLine: 0 }
+  let isIntemplate = false
+  let len = taggedTemplateNodesPos.length
 
-  if (start.line > startLine && end.line < endLine) {
+  if (len) {
+    for (let i = 0; i < len; i++) {
+      const { startLine, endLine } = taggedTemplateNodesPos[i]
+      if (start.line > startLine && end.line < endLine) {
+        isIntemplate = true
+        break
+      }
+    }
+  }
+
+  if (isIntemplate) {
     edit.replace(document.uri, new vscode.Range(start, end), `\$\{${fn}('${key}')\}`)
   } else {
     // 需要把引号移除掉
