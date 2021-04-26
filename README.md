@@ -36,8 +36,13 @@ class CustomButton extends LitElement {
 }
 ```
 
+**生成key：**
+
 ![replace](./assets/replace.gif)
 
+**更新key：**
+
+![update](./assets/update.gif)
 
 💡：*这只是一个小的工具，而不是一个多语言翻译平台*
 
@@ -49,6 +54,7 @@ class CustomButton extends LitElement {
 - [x] 自定义JSON文件存放位置
 - [x] 遇到相同或者相似的文本会提供已有的翻译进行选择
 - [x] 检查key是否在JSON文件中丢失
+- [x] 更新key
 
 
 ![hover](./assets/hover.gif)
@@ -57,6 +63,5 @@ class CustomButton extends LitElement {
 
 ## TODO
 
-- [ ] 更新key
 - [ ] 全文检索代码中存在的中文字符（过滤掉注释）
 - [ ] 接入翻译平台
