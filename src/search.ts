@@ -48,9 +48,12 @@ function searchKeyInFile<T extends any[]>(file: vscode.TextDocument, list: T, ke
         })
       }
     } else {  // 查找所有的key
-      // str.match(/(?<=i18n\(').+?(?=')/gi)
-      // TODO 函数名使用变量
-      const result = lineText.match(/(?<=i18n\(').+?(?=')/gi)
+
+      const fn = getConfiguration('func') as string
+      const str = `(?<=${fn}\\(').+?(?=')`
+      const re = new RegExp(str, "gi")
+      const result = lineText.match(re)
+  
       if (result?.length) {
         list.push({
           uri: filePath,
