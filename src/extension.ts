@@ -65,6 +65,50 @@ export function activate(context: vscode.ExtensionContext) {
   }))
 
   /**
+   * 包裹当前的key
+   */
+  context.subscriptions.push(vscode.commands.registerTextEditorCommand('lit-i18n-tool.wrappdKey', async () => {
+    const activeEditor = window.activeTextEditor
+    if (!activeEditor) return
+
+    const selection = activeEditor.selection
+    const selectedText = activeEditor.document.getText(selection)
+
+    const list = analysisJson(selectedText)
+
+    if (list?.length) {
+      const pickList = list.map(item => {
+        return {
+          label: item.value,
+          description: item.key
+        }
+      })
+
+      const picked = await window.showQuickPick(pickList, {
+        placeHolder: '当前文本已有翻译模版'
+      })
+    
+      if (picked) return replaceSelectedContent(picked.label)
+    }
+
+    // 获取输入的key
+    const key: string | undefined = await window.showInputBox({
+      prompt: '设置key',
+      value: '',
+      placeHolder: "请输入key值"
+    })
+
+    if (!key) {
+      return window.showErrorMessage('key不能为空')
+    }
+
+    await generateJson(key, selectedText)
+    await replaceSelectedContent(selectedText)
+
+    window.showInformationMessage(`成功替换当前文本`)
+  }))
+
+  /**
    * 更新选择的key
    * 检索工作区，看当前key被使用了几次，并列举出来
    * 如果全部替换，直接更新所有key，并修改json文件

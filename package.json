@@ -2,7 +2,7 @@
   "name": "lit-i18n-tool",
   "displayName": "lit-i18n-tool",
   "description": "让你的多语言项目项目开发更轻松",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.47.0"
   },
@@ -21,7 +21,8 @@
   "activationEvents": [
     "onLanguage:typescript",
     "onLanguage:javascript",
-    "onLanguage:html"
+    "onLanguage:html",
+    "onLanguage:vue"
   ],
   "main": "./out/extension.js",
   "icon": "icon.png",
@@ -89,11 +90,21 @@
       {
         "command": "lit-i18n-tool.check",
         "title": "lit-i18n-tool: 检查key"
+      },
+      {
+        "command": "lit-i18n-tool.wrappdKey",
+        "title": "lit-i18n-tool：包裹当前文案"
       }
     ],
     "keybindings": [
       {
         "command": "lit-i18n-tool.replaceSingle",
+        "key": "shift+cmd+o",
+        "mac": "shift+cmd+o",
+        "when": "editorHasSelection"
+      },
+      {
+        "command": "lit-i18n-tool.wrappdKey",
         "key": "shift+cmd+i",
         "mac": "shift+cmd+i",
         "when": "editorHasSelection"
@@ -102,13 +113,18 @@
     "menus": {
       "editor/context": [
         {
-          "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html/",
+          "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html|.vue/",
           "command": "lit-i18n-tool.replaceSingle",
           "group": "1_i18n"
         },
         {
-          "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html/",
+          "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html|.vue/",
           "command": "lit-i18n-tool.updateKey",
+          "group": "1_i18n"
+        },
+        {
+          "when": "editorHasSelection && resourceFilename =~ /.ts|.js|.html|.vue/",
+          "command": "lit-i18n-tool.wrappdKey",
           "group": "1_i18n"
         }
       ]
